@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ToDo List</title>
+</head>
+<body>
+    <h1>Список задач</h1>
+    <ul id="task-list"></ul>
+
+    <input type="text" id="new-task" placeholder="Новая задача">
+    <button onclick="addTask()">Добавить</button>
+
+    <script>
+        async function fetchTasks() {
+            const res = await fetch('/tasks');
+            const tasks = await res.json();
+            const list = document.getElementById('task-list');
+            list.innerHTML = '';
+            tasks.forEach(task => {
+                const li = document.createElement('li');
+                li.textContent = task.title + (task.completed ? ' ✅' : '');
+                const delBtn = document.createElement('button');
+                delBtn.textContent = 'Удалить';
+                delBtn.onclick = () => deleteTask(task.id);
+                li.appendChild(delBtn);
+                list.appendChild(li);
+            });
+        }
+
+        async function addTask() {
+            const input = document.getElementById('new-task');
+            const title = input.value;
+            if (!title) return;
+            await fetch('/tasks', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({title})
+            });
+            input.value = '';
+            fetchTasks();
+        }
+
+        async function deleteTask(id) {
+            await fetch('/tasks/' + id, { method: 'DELETE' });
+            fetchTasks();
+        }
+
+        fetchTasks();
+    </script>
+</body>
+</html>
