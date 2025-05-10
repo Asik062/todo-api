@@ -1,11 +1,11 @@
 import psycopg2
 
 # Параметры подключения
-host = "localhost"  # Или "db", если база в Docker
+host = "db"  # Имя сервиса в docker-compose
 port = 5432
 dbname = "todo_db"
-user = "postgres"
-password = "postgres"
+user = "user"
+password = "password"
 
 # Создание строки подключения
 connection_url = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
@@ -22,7 +22,7 @@ try:
         password=password,
         host=host,
         port=port,
-        client_encoding='UTF8'  # Устанавливаем кодировку
+        client_encoding='UTF8'
     )
     
     print("Подключение успешно!")

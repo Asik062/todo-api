@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TODO App</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>TODO App</h1>
+    <button onclick="getToken()">Войти</button>
+    <br><br>
+    <input type="text" id="taskInput" placeholder="Новая задача">
+    <button onclick="addTask()">Добавить</button>
+
+    <h3>Список задач:</h3>
+    <ul id="taskList"></ul>
+
+    <script>
+        let token = "";
+
+        function getToken() {
+            fetch('/login')
+                .then(res => res.json())
+                .then(data => {
+                    token = data.token;
+                    alert("Токен получен");
+                    loadTasks();
+                });
+        }
+
+        function addTask() {
+            const text = document.getElementById('taskInput').value;
+            fetch('/tasks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                },
+                body: JSON.stringify({ text })
+            })
+            .then(res => res.json())
+            .then(() => {
+                document.getElementById('taskInput').value = "";
+                loadTasks();
+            });
+        }
+
+        function loadTasks() {
+            fetch('/tasks', {
+                headers: { 'Authorization': token }
+            })
+            .then(res => res.json())
+            .then(tasks => {
+                const list = document.getElementById('taskList');
+                list.innerHTML = "";
+                tasks.forEach(task => {
+                    const li = document.createElement('li');
+                    li.textContent = task.text;
+                    list.appendChild(li);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

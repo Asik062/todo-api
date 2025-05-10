@@ -1,18 +1,27 @@
-from flask import Blueprint, request, jsonify
-from .models import Task
-from . import db
+from flask import Blueprint, jsonify, request, render_template
+from app.models import Task, db
+from app.auth import token_required, generate_token
 
-bp = Blueprint('routes', __name__)
+bp = Blueprint('main', __name__)
 
-@bp.route('/tasks', methods=['GET'])
-def get_tasks():
+@bp.route("/")
+def index():
+    return render_template("index.html")
+
+@bp.route("/login", methods=["GET"])
+def login():
+    token = generate_token()
+    return jsonify({"token": token})
+
+@bp.route("/tasks", methods=["GET", "POST"])
+@token_required
+def tasks():
+    if request.method == "POST":
+        data = request.get_json()
+        new_task = Task(text=data["text"])
+        db.session.add(new_task)
+        db.session.commit()
+        return jsonify({"message": "Задача добавлена"}), 201
+
     tasks = Task.query.all()
-    return jsonify([{'id': t.id, 'title': t.title, 'done': t.done} for t in tasks])
-
-@bp.route('/tasks', methods=['POST'])
-def add_task():
-    data = request.get_json()
-    new_task = Task(title=data['title'])
-    db.session.add(new_task)
-    db.session.commit()
-    return jsonify({'message': 'Task created'}), 201
+    return jsonify([{"id": t.id, "text": t.text} for t in tasks])
