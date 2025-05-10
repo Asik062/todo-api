@@ -19,21 +19,7 @@ A simple full-stack TODO application built with:
 
 ## 🧱 Architecture
 
-┌────────────┐ HTTP ┌──────────────┐
-│ Web UI │ <-------> │ Flask API │
-│ (HTML/JS) │ │ (with JWT) │
-└────────────┘ └─────┬────────┘
-│ SQLAlchemy
-▼
-┌────────────┐
-│ PostgreSQL │
-└────────────┘
-
-
-
-
-
-
+![image](https://github.com/user-attachments/assets/d0febffb-13f2-48dc-ab07-a23b7afec2fe)
 
 CONTAINERS:
 ![image](https://github.com/user-attachments/assets/e8f32cf8-bc52-4da0-a7af-c21dab200d22)
